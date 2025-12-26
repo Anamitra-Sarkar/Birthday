@@ -128,6 +128,11 @@
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- REOPEN BUTTON (Hidden by default) -->
+    <button id="reopen-btn" onclick="toggleCard(true); event.stopPropagation();" class="fixed bottom-8 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full shadow-lg opacity-0 hidden-layout transition-opacity duration-500 hover:bg-white/20 active:scale-95 z-50 ring-2 ring-white/10">
+        <span class="text-2xl drop-shadow-md">💌</span>
+    </button>
+
     <main class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 relative z-10">
 
         <!-- PHASE 1: Greeting -->
@@ -163,7 +168,16 @@
 
         <!-- PHASE 3: Promise & Timer -->
         <div id="phase-3" class="opacity-0 hidden-layout w-full max-w-lg transition-opacity duration-1000 ease-in">
-            <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20">
+            <!-- Added 'relative' class to support absolute positioning of Close button -->
+            <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20 relative">
+                
+                <!-- CLOSE BUTTON -->
+                <button onclick="toggleCard(false); event.stopPropagation();" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
                 <img src="./proposal.jpg" alt="Our Future" class="w-full h-auto max-h-[40vh] object-cover rounded-2xl mb-6 shadow-2xl border-2 border-white/20">
                 
                 <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-100 mb-2">
@@ -342,6 +356,36 @@
             }, 1000);
 
             setInterval(createLantern, 100);
+        }
+
+        // TOGGLE CARD (Close/Reopen)
+        function toggleCard(show) {
+            const card = document.getElementById('phase-3');
+            const btn = document.getElementById('reopen-btn');
+
+            if (show) {
+                // HIDE BTN, SHOW CARD
+                btn.classList.add('opacity-0');
+                setTimeout(() => btn.classList.add('hidden-layout'), 500);
+
+                card.classList.remove('hidden-layout');
+                setTimeout(() => {
+                    card.classList.remove('opacity-0');
+                    card.classList.add('opacity-100');
+                }, 50);
+
+            } else {
+                // HIDE CARD, SHOW BTN
+                card.classList.remove('opacity-100');
+                card.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    card.classList.add('hidden-layout');
+                    
+                    btn.classList.remove('hidden-layout');
+                    setTimeout(() => btn.classList.remove('opacity-0'), 50);
+                }, 1000);
+            }
         }
     </script>
 </body>
