@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>For You ❤️</title>
+    
+    <!-- FAVICON: This puts the ❤️ emoji in the browser tab -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -114,6 +118,10 @@
         /* TYPEWRITER CURSOR */
         .cursor::after { content: '|'; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+        
+        /* MODAL SCALE TRANSITION */
+        .scale-95 { transform: scale(0.95); }
+        .scale-100 { transform: scale(1); }
     </style>
 </head>
 <body class="text-white w-full h-full overflow-hidden" onclick="createHeartBurst(event)">
@@ -132,6 +140,23 @@
     <button id="reopen-btn" onclick="toggleCard(true); event.stopPropagation();" class="fixed bottom-8 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full shadow-lg opacity-0 hidden-layout transition-opacity duration-500 hover:bg-white/20 active:scale-95 z-50 ring-2 ring-white/10">
         <span class="text-2xl drop-shadow-md">💌</span>
     </button>
+    
+    <!-- "NO" MODAL POPUP (Hidden by default) -->
+    <div id="no-modal" class="fixed inset-0 flex items-center justify-center z-[60] hidden-layout opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeNoModal()"></div>
+        <!-- Modal Card -->
+        <div class="glass-card p-8 rounded-2xl max-w-xs text-center relative transform scale-95 transition-transform duration-300 border border-rose-500/30 shadow-2xl">
+            <h3 class="text-3xl text-rose-300 mb-3 font-bold drop-shadow-md" style="font-family: 'Dancing Script', cursive;">Nice Try! 😉</h3>
+            <p class="text-white/90 mb-6 text-lg font-light leading-relaxed">
+                But the universe has already decided. (> . <)
+            </p>
+            <p class="text-xs text-rose-200/50 italic mb-6 tracking-widest uppercase">Error 404: Option not found</p>
+            <button onclick="closeNoModal()" class="bg-rose-600 hover:bg-rose-700 text-white py-3 px-8 rounded-full font-bold shadow-lg transition-transform active:scale-95">
+                Okay, YES! ❤️
+            </button>
+        </div>
+    </div>
 
     <main class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 relative z-10">
 
@@ -160,7 +185,7 @@
                 <button onclick="sheSaidYes(event)" class="bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xl md:text-2xl font-bold py-5 px-16 rounded-full shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-auto ring-4 ring-rose-500/30">
                     YES! 💍
                 </button>
-                <button onclick="alert('Error: This button is disabled by the universe 😉'); event.stopPropagation();" class="bg-gray-800/40 hover:bg-gray-800/60 text-gray-400 text-sm py-3 px-8 rounded-full backdrop-blur-sm border border-gray-600/30 transition-colors">
+                <button onclick="showNoModal(event)" class="bg-gray-800/40 hover:bg-gray-800/60 text-gray-400 text-sm py-3 px-8 rounded-full backdrop-blur-sm border border-gray-600/30 transition-colors">
                     No (404)
                 </button>
             </div>
@@ -168,7 +193,6 @@
 
         <!-- PHASE 3: Promise & Timer -->
         <div id="phase-3" class="opacity-0 hidden-layout w-full max-w-lg transition-opacity duration-1000 ease-in">
-            <!-- Added 'relative' class to support absolute positioning of Close button -->
             <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20 relative">
                 
                 <!-- CLOSE BUTTON -->
@@ -234,17 +258,13 @@
                 const frame = document.createElement('div');
                 frame.classList.add('floating-photo');
                 
-                // Random Static Position (Spread across the screen)
-                // Using 85vw/vh to keep them somewhat on screen
+                // Random Static Position
                 frame.style.left = Math.random() * 85 + 'vw';
                 frame.style.top = Math.random() * 85 + 'vh';
                 
-                // Random Animation Variables (The "Zero Displacement" Hover)
-                // Move X/Y: Small movements between -20px and 20px
+                // Zero Displacement Animation vars
                 const moveX = (Math.random() * 40 - 20) + 'px';
                 const moveY = (Math.random() * 40 - 20) + 'px';
-                
-                // Rotation: Gentle twists
                 const rot = (Math.random() * 20 - 10) + 'deg';
                 const rotEnd = (Math.random() * 20 - 10) + 'deg';
                 
@@ -253,22 +273,22 @@
                 frame.style.setProperty('--rot', rot);
                 frame.style.setProperty('--rot-end', rotEnd);
 
-                // Random Duration (3s to 6s) for natural feel
                 frame.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                // Random delay so they don't all move in sync
                 frame.style.animationDelay = (Math.random() * 2) + 's';
 
                 const img = document.createElement('img');
                 img.src = imgName;
-                img.onerror = function() { frame.style.display = 'none'; }; // Hide if missing
+                img.onerror = function() { frame.style.display = 'none'; }; 
                 
                 frame.appendChild(img);
                 container.appendChild(frame);
             });
         }
 
-        // Heart Burst on Click
         function createHeartBurst(e) {
+            // If clicking a button, don't create heart (stops clutter)
+            if(e.target.tagName === 'BUTTON') return;
+            
             const container = document.body;
             const heart = document.createElement('div');
             heart.innerText = '❤️';
@@ -280,10 +300,8 @@
             setTimeout(() => heart.remove(), 1000);
         }
 
-        // Intervals
         setInterval(createLantern, 800);
         
-        // Start Timer
         function updateTimer() {
             const now = new Date();
             const diff = now - START_DATE;
@@ -295,7 +313,6 @@
         }
         setInterval(updateTimer, 1000);
 
-        // Run Init Logic
         initPhotos();
 
         // --- TRANSITIONS ---
@@ -333,7 +350,6 @@
                 }, 100);
             }, 1000);
 
-            // Intense Lanterns
             let intense = setInterval(createLantern, 200);
             setTimeout(() => clearInterval(intense), 5000);
             document.getElementById('bg-image').style.filter = "brightness(1.0)";
@@ -358,13 +374,11 @@
             setInterval(createLantern, 100);
         }
 
-        // TOGGLE CARD (Close/Reopen)
         function toggleCard(show) {
             const card = document.getElementById('phase-3');
             const btn = document.getElementById('reopen-btn');
 
             if (show) {
-                // HIDE BTN, SHOW CARD
                 btn.classList.add('opacity-0');
                 setTimeout(() => btn.classList.add('hidden-layout'), 500);
 
@@ -375,17 +389,39 @@
                 }, 50);
 
             } else {
-                // HIDE CARD, SHOW BTN
                 card.classList.remove('opacity-100');
                 card.classList.add('opacity-0');
                 
                 setTimeout(() => {
                     card.classList.add('hidden-layout');
-                    
                     btn.classList.remove('hidden-layout');
                     setTimeout(() => btn.classList.remove('opacity-0'), 50);
                 }, 1000);
             }
+        }
+        
+        // MODAL LOGIC
+        function showNoModal(e) {
+            if(e) e.stopPropagation();
+            const modal = document.getElementById('no-modal');
+            modal.classList.remove('hidden-layout');
+            // Slight delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.glass-card').classList.remove('scale-95');
+                modal.querySelector('.glass-card').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeNoModal() {
+            const modal = document.getElementById('no-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('.glass-card').classList.remove('scale-100');
+            modal.querySelector('.glass-card').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden-layout');
+            }, 300);
         }
     </script>
 </body>
