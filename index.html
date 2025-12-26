@@ -8,20 +8,44 @@
     <!-- FAVICON -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
 
-    <!-- Tailwind (Keep it for layout, but we add fallbacks below) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GOOGLE FONTS (With Fallback) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CORE STYLES (Zero Dependencies) --- */
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #0f172a;
-            overflow: hidden;
-            touch-action: manipulation;
+        /* --- RESET & BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Remove mobile tap blue box */
         }
 
+        body {
+            font-family: 'Montserrat', sans-serif; /* Fallback: sans-serif */
+            background-color: #0f172a;
+            color: white;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- LAYOUT UTILITIES (Replaces Tailwind) --- */
+        .flex-center-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .relative { position: relative; }
+        .z-10 { z-index: 10; }
+        .text-center { text-align: center; }
+
+        /* --- BACKGROUNDS --- */
         #bg-image {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('./proposal.jpg'); 
@@ -35,39 +59,105 @@
             z-index: -1;
         }
 
-        /* --- BULLETPROOF MODAL STYLES (Works even if Tailwind fails) --- */
-        .safe-modal-overlay {
+        #floating-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100;
-            transition: opacity 0.3s ease;
+            pointer-events: none; z-index: 0;
         }
 
-        .safe-modal-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2rem; border-radius: 1rem;
-            text-align: center; max-width: 320px; width: 85%;
-            box-shadow: 0 20px 25px rgba(0,0,0,0.2);
-            transform: scale(0.95); transition: transform 0.3s ease;
+        /* --- TYPOGRAPHY --- */
+        h1.title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem; /* Mobile */
+            color: #fcd34d; /* Amber-300 */
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
 
-        .safe-modal-card.scale-100 { transform: scale(1); }
+        p.subtitle {
+            font-size: 1.125rem;
+            color: #f3f4f6;
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Desktop Text Sizes */
+        @media (min-width: 768px) {
+            h1.title { font-size: 5rem; }
+            p.subtitle { font-size: 1.5rem; }
+        }
+
+        /* --- COMPONENTS --- */
         
-        .safe-btn-yes {
-            background-color: #e11d48; color: white;
-            padding: 12px 32px; border-radius: 9999px;
-            font-weight: bold; font-size: 1rem;
-            border: none; cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2.5rem 1.5rem;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: opacity 1s ease, transform 1s ease;
         }
-        .safe-btn-yes:active { transform: scale(0.95); }
 
-        /* --- ANIMATIONS --- */
+        /* Buttons */
+        .btn {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 1rem 2.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1.125rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .btn:active { transform: scale(0.95); }
+
+        .btn-wish {
+            background: linear-gradient(to right, #f59e0b, #ea580c); /* Amber to Orange */
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-yes {
+            background-color: #e11d48; /* Rose-600 */
+            color: white;
+            padding: 1.25rem 4rem;
+            font-size: 1.25rem;
+        }
+
+        .btn-no {
+            background-color: rgba(31, 41, 55, 0.6); /* Gray-800/60 */
+            color: #d1d5db; /* Gray-300 */
+            font-size: 0.875rem;
+            padding: 0.75rem 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            margin-top: 1rem;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .btn-row { flex-direction: row; justify-content: center; }
+            .btn-no { margin-top: 0; }
+        }
+
+        /* --- ANIMATIONS & PARTICLES --- */
         .lantern {
             position: absolute;
             background: radial-gradient(circle, #ffdb58 0%, #ffa500 100%);
@@ -76,7 +166,6 @@
             bottom: -50px; opacity: 0.8;
             box-shadow: 0 0 15px #ffae00, 0 0 30px #ff6a00;
             animation: floatUp linear infinite;
-            z-index: 1;
         }
 
         .floating-photo {
@@ -85,18 +174,22 @@
             opacity: 0.85; pointer-events: none; z-index: 2;
             animation: floatHover ease-in-out infinite alternate;
         }
-        
-        .floating-photo img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; display: block; }
+        .floating-photo img { width: 100%; height: auto; display: block; }
 
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; }
             10% { opacity: 0.9; }
-            100% { transform: translateY(-110vh) scale(0.5) rotate(10deg); opacity: 0; }
+            100% { transform: translateY(-120vh) scale(0.5) rotate(10deg); opacity: 0; }
         }
 
         @keyframes floatHover {
             0% { transform: translate(0, 0) rotate(var(--rot)); }
             100% { transform: translate(var(--move-x), var(--move-y)) rotate(var(--rot-end)); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
         }
 
         .click-heart {
@@ -108,104 +201,114 @@
             100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
         }
 
-        /* UTILS */
-        h1, h2 { font-family: 'Dancing Script', cursive; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            z-index: 20;
-        }
-        .opacity-0 { opacity: 0; pointer-events: none; }
-        .opacity-100 { opacity: 1; pointer-events: auto; }
-        .hidden-layout { display: none !important; }
         .cursor::after { content: '|'; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- UTILITY CLASSES --- */
+        .hidden-layout { display: none !important; }
+        .opacity-0 { opacity: 0; pointer-events: none; }
+        .opacity-100 { opacity: 1; pointer-events: auto; }
+        .fade-in-delay { transition: opacity 1s ease 0.5s; }
+
+        /* --- MODAL --- */
+        #no-modal {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            transition: opacity 0.3s;
+        }
+        #reopen-btn {
+            position: fixed; bottom: 2rem; right: 2rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 1rem; border-radius: 50%;
+            font-size: 1.5rem; cursor: pointer;
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            transition: all 0.3s;
+        }
+        
+        /* Final Card Image */
+        .final-img {
+            width: 100%; height: auto; max-height: 40vh;
+            object-fit: cover; border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .timer-box { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 1.5rem; padding-top: 1.5rem; }
     </style>
 </head>
-<body class="text-white w-full h-full overflow-hidden" onclick="createHeartBurst(event)">
+<body onclick="createHeartBurst(event)">
 
     <div id="bg-image"></div>
     <div class="overlay"></div>
-    <div id="floating-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    <div id="floating-container"></div>
 
     <audio id="bg-music" loop>
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- REOPEN BUTTON -->
-    <button id="reopen-btn" onclick="toggleCard(true); event.stopPropagation();" class="fixed bottom-8 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full shadow-lg opacity-0 hidden-layout transition-opacity duration-500 hover:bg-white/20 active:scale-95 z-50 ring-2 ring-white/10">
-        <span class="text-2xl drop-shadow-md">💌</span>
-    </button>
+    <!-- REOPEN BTN -->
+    <button id="reopen-btn" class="hidden-layout opacity-0" onclick="toggleCard(true); event.stopPropagation();">💌</button>
     
-    <!-- SAFE "NO" MODAL POPUP -->
-    <div id="no-modal" class="safe-modal-overlay hidden-layout opacity-0">
-        <!-- Backdrop click closes it -->
-        <div class="absolute inset-0" onclick="closeNoModal()"></div>
-        <!-- Card -->
-        <div class="safe-modal-card relative">
-            <h3 class="text-3xl text-rose-300 mb-3 font-bold drop-shadow-md" style="font-family: 'Dancing Script', cursive;">Nice Try! 😉</h3>
-            <p class="text-white/90 mb-6 text-lg font-light leading-relaxed">
-                But the universe (and my code) has already decided.
-            </p>
-            <p class="text-xs text-rose-200/50 italic mb-6 tracking-widest uppercase">Error 404: Option not found</p>
-            <button onclick="closeNoModal()" class="safe-btn-yes">
-                Okay, YES! ❤️
-            </button>
+    <!-- MODAL -->
+    <div id="no-modal" class="hidden-layout opacity-0">
+        <div style="position:absolute;inset:0;" onclick="closeNoModal()"></div>
+        <div class="glass-card" style="max-width:320px; transform: scale(0.95); transition: transform 0.3s;" id="modal-card">
+            <h3 style="font-family:'Dancing Script'; color:#fca5a5; font-size:2rem; margin-bottom:0.5rem;">Nice Try! 😉</h3>
+            <p style="margin-bottom:1.5rem;">But the universe (and my code) has already decided.</p>
+            <button class="btn btn-yes" style="padding: 0.75rem 2rem; font-size:1rem;" onclick="closeNoModal()">Okay, YES! ❤️</button>
         </div>
     </div>
 
-    <main class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 relative z-10">
+    <main class="flex-center-col relative z-10">
 
-        <!-- PHASE 1: Greeting -->
-        <div id="phase-1" class="glass-card p-10 md:p-14 rounded-3xl text-center max-w-sm md:max-w-xl w-full transition-opacity duration-1000">
-            <h1 class="text-5xl md:text-7xl mb-6 text-amber-300 tracking-wide">Happy Birthday!</h1>
-            <p class="text-lg md:text-2xl mb-10 font-light leading-relaxed text-gray-100">
+        <!-- PHASE 1 -->
+        <div id="phase-1" class="glass-card text-center">
+            <h1 class="title">Happy Birthday!</h1>
+            <p class="subtitle">
                 To the most beautiful soul in the universe. <br>
                 Make a wish...
             </p>
-            <button onclick="startProposal(event)" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white font-semibold py-4 px-10 rounded-full shadow-xl transition-all duration-300 animate-pulse text-lg md:text-xl tracking-wider">
+            <button onclick="startProposal(event)" class="btn btn-wish">
                 ✨ Make a Wish ✨
             </button>
         </div>
 
-        <!-- PHASE 2: Proposal -->
-        <div id="phase-2" class="opacity-0 hidden-layout text-center max-w-4xl w-full transition-opacity duration-1000 ease-in">
-            <h1 id="typewriter-text" class="text-5xl md:text-8xl mb-8 text-amber-200 drop-shadow-lg min-h-[1.2em]"></h1>
+        <!-- PHASE 2 -->
+        <div id="phase-2" class="opacity-0 hidden-layout flex-center-col">
+            <h1 id="typewriter-text" class="title" style="min-height: 1.2em;"></h1>
             
-            <p class="text-2xl md:text-4xl mb-12 font-medium drop-shadow-md leading-relaxed text-white fade-in-delay opacity-0 transition-opacity duration-1000">
+            <p class="subtitle fade-in-delay opacity-0">
                 Hold my hand and become the Queen 👑❤️
             </p>
             
-            <div class="flex flex-col md:flex-row gap-6 justify-center items-center w-full px-4 fade-in-delay opacity-0 transition-opacity duration-1000 delay-500">
-                <button onclick="sheSaidYes(event)" class="bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xl md:text-2xl font-bold py-5 px-16 rounded-full shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-auto ring-4 ring-rose-500/30">
-                    YES! 💍
-                </button>
-                <button onclick="showNoModal(event)" class="bg-gray-800/40 hover:bg-gray-800/60 text-gray-400 text-sm py-3 px-8 rounded-full backdrop-blur-sm border border-gray-600/30 transition-colors">
-                    No (404)
-                </button>
+            <div class="btn-row fade-in-delay opacity-0">
+                <button onclick="sheSaidYes(event)" class="btn btn-yes">YES! 💍</button>
+                <button onclick="showNoModal(event)" class="btn btn-no">No (404)</button>
             </div>
         </div>
 
-        <!-- PHASE 3: Promise & Timer -->
-        <div id="phase-3" class="opacity-0 hidden-layout w-full max-w-lg transition-opacity duration-1000 ease-in">
-            <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20 relative">
-                
-                <button onclick="toggleCard(false); event.stopPropagation();" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50 p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+        <!-- PHASE 3 -->
+        <div id="phase-3" class="opacity-0 hidden-layout flex-center-col">
+            <div class="glass-card relative">
+                <!-- Close Icon -->
+                <button onclick="toggleCard(false); event.stopPropagation();" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:rgba(255,255,255,0.6); font-size:1.5rem; cursor:pointer;">&times;</button>
 
-                <img src="./proposal.jpg" alt="Our Future" class="w-full h-auto max-h-[40vh] object-cover rounded-2xl mb-6 shadow-2xl border-2 border-white/20">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-100 mb-2">Let's recreate this moment!</h2>
+                <img src="./proposal.jpg" alt="Our Future" class="final-img">
                 
-                <div class="mt-6 pt-6 border-t border-white/10">
-                    <p class="text-sm text-amber-200/80 uppercase tracking-widest mb-2">Falling in love for</p>
-                    <div id="timer" class="text-xl md:text-2xl font-mono text-white font-bold">00d 00h 00m 00s</div>
+                <h2 style="font-family:'Dancing Script'; font-size:2rem; color:#fef3c7; margin-bottom:0.5rem; text-align:center;">
+                    Let's recreate this moment!
+                </h2>
+                
+                <div class="timer-box text-center">
+                    <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; opacity:0.8; margin-bottom:0.5rem;">Falling in love for</p>
+                    <div id="timer" style="font-family:monospace; font-size:1.25rem; font-weight:bold;">00d 00h 00m 00s</div>
                 </div>
-                <p class="text-xs text-amber-200/40 mt-6 tracking-[0.2em] uppercase text-center">Screenshot this ❤️</p>
+                <p style="font-size:0.75rem; opacity:0.5; margin-top:1.5rem; text-align:center; letter-spacing:0.2em; text-transform:uppercase;">Screenshot this ❤️</p>
             </div>
         </div>
 
@@ -217,7 +320,6 @@
 
         function createLantern() {
             const container = document.getElementById('floating-container');
-            if (!container) return;
             const lantern = document.createElement('div');
             lantern.classList.add('lantern');
             lantern.style.left = Math.random() * 100 + 'vw';
@@ -230,20 +332,15 @@
 
         function initPhotos() {
             const container = document.getElementById('floating-container');
-            if (!container) return;
             PHOTO_LIST.forEach((imgName) => {
                 const frame = document.createElement('div');
                 frame.classList.add('floating-photo');
                 frame.style.left = Math.random() * 85 + 'vw';
                 frame.style.top = Math.random() * 85 + 'vh';
-                const moveX = (Math.random() * 40 - 20) + 'px';
-                const moveY = (Math.random() * 40 - 20) + 'px';
-                const rot = (Math.random() * 20 - 10) + 'deg';
-                const rotEnd = (Math.random() * 20 - 10) + 'deg';
-                frame.style.setProperty('--move-x', moveX);
-                frame.style.setProperty('--move-y', moveY);
-                frame.style.setProperty('--rot', rot);
-                frame.style.setProperty('--rot-end', rotEnd);
+                frame.style.setProperty('--move-x', (Math.random() * 40 - 20) + 'px');
+                frame.style.setProperty('--move-y', (Math.random() * 40 - 20) + 'px');
+                frame.style.setProperty('--rot', (Math.random() * 20 - 10) + 'deg');
+                frame.style.setProperty('--rot-end', (Math.random() * 20 - 10) + 'deg');
                 frame.style.animationDuration = (Math.random() * 3 + 3) + 's';
                 frame.style.animationDelay = (Math.random() * 2) + 's';
                 const img = document.createElement('img');
@@ -268,8 +365,7 @@
         }
 
         setInterval(createLantern, 800);
-        
-        function updateTimer() {
+        setInterval(() => {
             const now = new Date();
             const diff = now - START_DATE;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -277,8 +373,7 @@
             const minutes = Math.floor((diff / 1000 / 60) % 60);
             const seconds = Math.floor((diff / 1000) % 60);
             document.getElementById('timer').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-        setInterval(updateTimer, 1000);
+        }, 1000);
         initPhotos();
 
         function typeWriter(text, i, fnCallback) {
@@ -292,8 +387,7 @@
 
         function startProposal(e) {
             if(e) e.stopPropagation(); 
-            const music = document.getElementById('bg-music');
-            if(music) { music.volume = 0.5; music.play().catch(console.log); }
+            document.getElementById('bg-music').play().catch(() => {});
             const p1 = document.getElementById('phase-1');
             p1.classList.add('opacity-0');
             setTimeout(() => {
@@ -358,17 +452,19 @@
         function showNoModal(e) {
             if(e) e.stopPropagation();
             const modal = document.getElementById('no-modal');
+            const card = document.getElementById('modal-card');
             modal.classList.remove('hidden-layout');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
-                modal.querySelector('.safe-modal-card').classList.add('scale-100');
+                card.style.transform = 'scale(1)';
             }, 10);
         }
 
         function closeNoModal() {
             const modal = document.getElementById('no-modal');
+            const card = document.getElementById('modal-card');
             modal.classList.add('opacity-0');
-            modal.querySelector('.safe-modal-card').classList.remove('scale-100');
+            card.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 modal.classList.add('hidden-layout');
             }, 300);
