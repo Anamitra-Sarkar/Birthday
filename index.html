@@ -13,9 +13,17 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             font-family: 'Montserrat', sans-serif;
             background-color: #0f172a;
+            /* Enable scrolling but hide scrollbar */
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE/Edge */
+        }
+        
+        /* Hide scrollbar for Chrome/Safari/Opera */
+        body::-webkit-scrollbar {
+            display: none;
         }
 
         /* The Background Image Container */
@@ -25,7 +33,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* UPDATED: Uses your local file now */
+            /* Uses your local file */
             background-image: url('./proposal.jpg'); 
             background-size: cover;
             background-position: center;
@@ -40,7 +48,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.85));
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.9));
             z-index: -1;
         }
 
@@ -66,101 +74,103 @@
         /* Typography */
         h1, h2 {
             font-family: 'Dancing Script', cursive;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        /* Glass Card */
+        /* Glass Card Refined */
         .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
         /* Transitions */
-        .fade-out {
-            opacity: 0 !important;
-            pointer-events: none;
-            transition: opacity 1s ease;
+        .transition-opacity {
+            transition: opacity 1s ease-in-out;
         }
         
-        .fade-in {
-            opacity: 1 !important;
-            pointer-events: auto;
-            transition: opacity 1.5s ease 0.5s;
-        }
-
-        .hidden-content {
+        .opacity-0 {
             opacity: 0;
             pointer-events: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
+        }
+        
+        .opacity-100 {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Utility to hide elements completely from layout to prevent scroll jumping */
+        .hidden-layout {
+            display: none !important;
         }
     </style>
 </head>
-<body class="text-white h-screen w-screen flex flex-col items-center justify-center">
+<body class="text-white w-full">
 
     <div id="bg-image"></div>
     <div class="overlay"></div>
     <div id="lantern-container" class="fixed inset-0 pointer-events-none z-0"></div>
 
-    <!-- AUDIO: Ensure 'song.mp3' is in your repo -->
+    <!-- AUDIO -->
     <audio id="bg-music" loop>
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- PHASE 1: Birthday Greeting -->
-    <div id="phase-1" class="glass-card p-8 md:p-12 rounded-2xl text-center z-10 max-w-sm md:max-w-md mx-4 transition-all duration-1000">
-        <h1 class="text-5xl md:text-6xl mb-6 text-amber-300">Happy Birthday!</h1>
-        <p class="text-lg md:text-xl mb-8 font-light leading-relaxed text-gray-100">
-            To the most beautiful soul in the universe. <br>
-            Make a wish...
-        </p>
-        <button onclick="startProposal()" class="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold py-4 px-10 rounded-full shadow-lg transform active:scale-95 transition-all duration-300 animate-pulse text-lg">
-            ✨ Make a Wish ✨
-        </button>
-    </div>
+    <!-- MAIN CONTAINER: Uses min-h-[100dvh] for mobile browser support -->
+    <main class="min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 relative z-10">
 
-    <!-- PHASE 2: The Proposal -->
-    <div id="phase-2" class="hidden-content z-10">
-        <h1 class="text-5xl md:text-7xl mb-8 text-amber-200">Will You...</h1>
-        <p class="text-2xl md:text-3xl mb-12 font-light drop-shadow-lg leading-relaxed text-white">
-            Hold my hand and become the Queen 👑❤️
-        </p>
-        
-        <div class="flex flex-col md:flex-row gap-6 justify-center items-center w-full px-8">
-            <button onclick="sheSaidYes()" class="bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xl font-bold py-4 px-12 rounded-full shadow-2xl transform active:scale-95 transition-all duration-300 w-full md:w-auto">
-                YES! 💍
-            </button>
-            <button onclick="alert('Error: This button is disabled by the universe 😉')" class="bg-gray-500/30 hover:bg-gray-500/50 text-gray-300 text-sm py-3 px-8 rounded-full backdrop-blur-sm border border-gray-500/30">
-                No (404)
+        <!-- PHASE 1: Birthday Greeting -->
+        <div id="phase-1" class="glass-card p-10 md:p-14 rounded-3xl text-center max-w-sm md:max-w-xl w-full transition-opacity duration-1000">
+            <h1 class="text-5xl md:text-7xl mb-6 text-amber-300 tracking-wide">Happy Birthday!</h1>
+            <p class="text-lg md:text-2xl mb-10 font-light leading-relaxed text-gray-100">
+                To the most beautiful soul in the universe. <br>
+                Make a wish...
+            </p>
+            <button onclick="startProposal()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white font-semibold py-4 px-10 rounded-full shadow-xl transition-all duration-300 animate-pulse text-lg md:text-xl tracking-wider">
+                ✨ Make a Wish ✨
             </button>
         </div>
-    </div>
 
-    <!-- PHASE 3: The Promise (Final Screen) -->
-    <div id="phase-3" class="hidden-content z-20 w-full px-4">
-        <div class="glass-card p-6 rounded-2xl mx-auto max-w-lg border border-amber-500/30">
-            <!-- UPDATED: Uses your local file now -->
-            <img src="./proposal.jpg" 
-                 alt="Our Future" 
-                 class="w-full h-64 md:h-80 object-cover rounded-xl mb-6 shadow-lg border-2 border-amber-200/50">
+        <!-- PHASE 2: The Proposal -->
+        <div id="phase-2" class="opacity-0 hidden-layout text-center max-w-4xl w-full transition-opacity duration-1000 ease-in">
+            <h1 class="text-6xl md:text-8xl mb-8 text-amber-200 drop-shadow-lg">Will You...</h1>
+            <p class="text-2xl md:text-4xl mb-12 font-medium drop-shadow-md leading-relaxed text-white">
+                Hold my hand and become the Queen 👑❤️
+            </p>
             
-            <h2 class="text-3xl md:text-4xl font-bold text-amber-100 mb-2 leading-tight">
-                Let's recreate this moment in future!
-            </h2>
-            <p class="text-xs text-amber-200/70 mt-4 tracking-widest uppercase">Screenshot this ❤️</p>
+            <div class="flex flex-col md:flex-row gap-6 justify-center items-center w-full px-4">
+                <button onclick="sheSaidYes()" class="bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xl md:text-2xl font-bold py-5 px-16 rounded-full shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-auto ring-4 ring-rose-500/30">
+                    YES! 💍
+                </button>
+                <button onclick="alert('Error: This button is disabled by the universe 😉')" class="bg-gray-800/40 hover:bg-gray-800/60 text-gray-400 text-sm py-3 px-8 rounded-full backdrop-blur-sm border border-gray-600/30 transition-colors">
+                    No (404)
+                </button>
+            </div>
         </div>
-    </div>
+
+        <!-- PHASE 3: The Promise (Final Screen) -->
+        <div id="phase-3" class="opacity-0 hidden-layout w-full max-w-lg transition-opacity duration-1000 ease-in">
+            <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20">
+                <!-- UPDATED: Uses your local file now -->
+                <img src="./proposal.jpg" 
+                     alt="Our Future" 
+                     class="w-full h-auto max-h-[50vh] object-cover rounded-2xl mb-8 shadow-2xl border-2 border-white/20">
+                
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-100 mb-3 leading-tight">
+                    Let's recreate this moment in future!
+                </h2>
+                <div class="text-center mt-6">
+                    <p class="text-xs text-amber-200/60 tracking-[0.2em] uppercase font-semibold">Screenshot this ❤️</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
     <script>
-        // LANTERN LOGIC
+        // LANTERN GENERATOR
         function createLantern() {
             const container = document.getElementById('lantern-container');
             if (!container) return;
@@ -168,6 +178,7 @@
             const lantern = document.createElement('div');
             lantern.classList.add('lantern');
             
+            // Random positioning logic
             lantern.style.left = Math.random() * 100 + 'vw';
             const duration = Math.random() * 5 + 8 + 's';
             lantern.style.animationDuration = duration;
@@ -176,44 +187,69 @@
 
             container.appendChild(lantern);
 
+            // Cleanup
             setTimeout(() => { lantern.remove(); }, parseFloat(duration) * 1000);
         }
 
-        setInterval(createLantern, 800);
+        // Initial lanterns (slow pace)
+        const initialInterval = setInterval(createLantern, 800);
 
-        // TRANSITIONS
+        // --- TRANSITION LOGIC ---
+
         function startProposal() {
-            // Audio
+            // 1. Audio
             const music = document.getElementById('bg-music');
             if(music) {
                 music.volume = 0.5;
-                music.play().catch(e => console.log("Click allowed audio play"));
+                music.play().catch(e => console.log("Interaction required for audio"));
             }
 
-            // Phase 1 -> Phase 2
-            document.getElementById('phase-1').classList.add('fade-out');
+            // 2. Hide Phase 1
+            const p1 = document.getElementById('phase-1');
+            p1.classList.add('opacity-0');
             
+            // Wait for fade out, then swap layout
+            setTimeout(() => {
+                p1.classList.add('hidden-layout');
+                
+                // Show Phase 2
+                const p2 = document.getElementById('phase-2');
+                p2.classList.remove('hidden-layout');
+                // Small delay to allow browser to render before fading in
+                setTimeout(() => {
+                    p2.classList.remove('opacity-0');
+                    p2.classList.add('opacity-100');
+                }, 50);
+            }, 1000); // Matches CSS transition duration
+
+            // 3. Lantern Burst
             let intenseInterval = setInterval(createLantern, 150);
             setTimeout(() => { clearInterval(intenseInterval); }, 5000);
 
-            const p2 = document.getElementById('phase-2');
-            p2.classList.remove('hidden-content');
-            p2.classList.add('fade-in');
-
+            // 4. Brighten BG slightly
             document.getElementById('bg-image').style.filter = "brightness(1.0)";
         }
 
         function sheSaidYes() {
-            // Phase 2 -> Phase 3
+            // 1. Hide Phase 2
             const p2 = document.getElementById('phase-2');
-            p2.classList.remove('fade-in');
-            p2.classList.add('fade-out');
+            p2.classList.remove('opacity-100');
+            p2.classList.add('opacity-0');
 
-            const p3 = document.getElementById('phase-3');
-            p3.classList.remove('hidden-content');
-            p3.classList.add('fade-in');
+            // Wait for fade out, then swap layout
+            setTimeout(() => {
+                p2.classList.add('hidden-layout');
+                
+                // Show Phase 3
+                const p3 = document.getElementById('phase-3');
+                p3.classList.remove('hidden-layout');
+                setTimeout(() => {
+                    p3.classList.remove('opacity-0');
+                    p3.classList.add('opacity-100');
+                }, 50);
+            }, 1000);
 
-            // Celebration Mode
+            // 2. Celebration Mode (Fast lanterns)
             setInterval(createLantern, 100);
         }
     </script>
