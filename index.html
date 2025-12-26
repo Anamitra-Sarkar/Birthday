@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>For You ❤️</title>
     
-    <!-- FAVICON: This puts the ❤️ emoji in the browser tab -->
+    <!-- FAVICON -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
 
+    <!-- Tailwind (Keep it for layout, but we add fallbacks below) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        /* CUSTOM STYLES */
+        /* --- CORE STYLES (Zero Dependencies) --- */
         body {
             margin: 0; padding: 0;
             font-family: 'Montserrat', sans-serif;
             background-color: #0f172a;
-            overflow: hidden; /* Prevent scroll for immersive feel */
+            overflow: hidden;
             touch-action: manipulation;
         }
 
@@ -33,7 +35,39 @@
             z-index: -1;
         }
 
-        /* LANTERNS */
+        /* --- BULLETPROOF MODAL STYLES (Works even if Tailwind fails) --- */
+        .safe-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+
+        .safe-modal-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem; border-radius: 1rem;
+            text-align: center; max-width: 320px; width: 85%;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.2);
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+
+        .safe-modal-card.scale-100 { transform: scale(1); }
+        
+        .safe-btn-yes {
+            background-color: #e11d48; color: white;
+            padding: 12px 32px; border-radius: 9999px;
+            font-weight: bold; font-size: 1rem;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .safe-btn-yes:active { transform: scale(0.95); }
+
+        /* --- ANIMATIONS --- */
         .lantern {
             position: absolute;
             background: radial-gradient(circle, #ffdb58 0%, #ffa500 100%);
@@ -42,32 +76,17 @@
             bottom: -50px; opacity: 0.8;
             box-shadow: 0 0 15px #ffae00, 0 0 30px #ff6a00;
             animation: floatUp linear infinite;
-            will-change: transform, opacity;
-            z-index: 1; /* Lanterns glow behind everything */
+            z-index: 1;
         }
 
-        /* PERMANENT FLOATING PHOTOS */
         .floating-photo {
-            position: absolute;
-            width: 110px; /* Slightly smaller to fit 14 comfortably */
-            padding: 8px 8px 25px 8px; /* Polaroid padding */
-            background: #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            opacity: 0.85; /* Slight transparency to blend with night sky */
-            pointer-events: none; /* Let clicks pass through */
-            z-index: 2; /* BEHIND the text card (level 20) */
-            
-            /* The Hover Animation */
+            position: absolute; width: 110px; padding: 8px 8px 25px 8px;
+            background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            opacity: 0.85; pointer-events: none; z-index: 2;
             animation: floatHover ease-in-out infinite alternate;
         }
-
-        .floating-photo img {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 1/1; /* Square crop */
-            object-fit: cover;
-            display: block;
-        }
+        
+        .floating-photo img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; display: block; }
 
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; }
@@ -75,84 +94,63 @@
             100% { transform: translateY(-110vh) scale(0.5) rotate(10deg); opacity: 0; }
         }
 
-        /* New "Zero Displacement" Animation */
         @keyframes floatHover {
-            0% {
-                transform: translate(0, 0) rotate(var(--rot));
-            }
-            100% {
-                transform: translate(var(--move-x), var(--move-y)) rotate(var(--rot-end));
-            }
+            0% { transform: translate(0, 0) rotate(var(--rot)); }
+            100% { transform: translate(var(--move-x), var(--move-y)) rotate(var(--rot-end)); }
         }
 
-        /* CLICK HEART PARTICLES */
         .click-heart {
-            position: absolute;
-            font-size: 1.5rem;
-            pointer-events: none;
-            animation: popHeart 1s ease-out forwards;
-            z-index: 50;
+            position: absolute; font-size: 1.5rem; pointer-events: none;
+            animation: popHeart 1s ease-out forwards; z-index: 50;
         }
-
         @keyframes popHeart {
             0% { transform: scale(0) translateY(0); opacity: 1; }
             100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
         }
 
-        /* TYPOGRAPHY & LAYOUT */
+        /* UTILS */
         h1, h2 { font-family: 'Dancing Script', cursive; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-
         .glass-card {
-            background: rgba(255, 255, 255, 0.15); 
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            z-index: 20; /* Keep text ABOVE photos */
+            z-index: 20;
         }
-
-        .transition-opacity { transition: opacity 1s ease-in-out; }
         .opacity-0 { opacity: 0; pointer-events: none; }
         .opacity-100 { opacity: 1; pointer-events: auto; }
         .hidden-layout { display: none !important; }
-        
-        /* TYPEWRITER CURSOR */
         .cursor::after { content: '|'; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
-        
-        /* MODAL SCALE TRANSITION */
-        .scale-95 { transform: scale(0.95); }
-        .scale-100 { transform: scale(1); }
     </style>
 </head>
 <body class="text-white w-full h-full overflow-hidden" onclick="createHeartBurst(event)">
 
     <div id="bg-image"></div>
     <div class="overlay"></div>
-    
-    <!-- Container for Lanterns and Photos -->
     <div id="floating-container" class="fixed inset-0 pointer-events-none z-0"></div>
 
     <audio id="bg-music" loop>
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- REOPEN BUTTON (Hidden by default) -->
+    <!-- REOPEN BUTTON -->
     <button id="reopen-btn" onclick="toggleCard(true); event.stopPropagation();" class="fixed bottom-8 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full shadow-lg opacity-0 hidden-layout transition-opacity duration-500 hover:bg-white/20 active:scale-95 z-50 ring-2 ring-white/10">
         <span class="text-2xl drop-shadow-md">💌</span>
     </button>
     
-    <!-- "NO" MODAL POPUP (Hidden by default) -->
-    <div id="no-modal" class="fixed inset-0 flex items-center justify-center z-[60] hidden-layout opacity-0 transition-opacity duration-300">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeNoModal()"></div>
-        <!-- Modal Card -->
-        <div class="glass-card p-8 rounded-2xl max-w-xs text-center relative transform scale-95 transition-transform duration-300 border border-rose-500/30 shadow-2xl">
+    <!-- SAFE "NO" MODAL POPUP -->
+    <div id="no-modal" class="safe-modal-overlay hidden-layout opacity-0">
+        <!-- Backdrop click closes it -->
+        <div class="absolute inset-0" onclick="closeNoModal()"></div>
+        <!-- Card -->
+        <div class="safe-modal-card relative">
             <h3 class="text-3xl text-rose-300 mb-3 font-bold drop-shadow-md" style="font-family: 'Dancing Script', cursive;">Nice Try! 😉</h3>
             <p class="text-white/90 mb-6 text-lg font-light leading-relaxed">
-                But the universe has already decided. (> . <)
+                But the universe (and my code) has already decided.
             </p>
             <p class="text-xs text-rose-200/50 italic mb-6 tracking-widest uppercase">Error 404: Option not found</p>
-            <button onclick="closeNoModal()" class="bg-rose-600 hover:bg-rose-700 text-white py-3 px-8 rounded-full font-bold shadow-lg transition-transform active:scale-95">
+            <button onclick="closeNoModal()" class="safe-btn-yes">
                 Okay, YES! ❤️
             </button>
         </div>
@@ -172,9 +170,8 @@
             </button>
         </div>
 
-        <!-- PHASE 2: Proposal (Typewriter) -->
+        <!-- PHASE 2: Proposal -->
         <div id="phase-2" class="opacity-0 hidden-layout text-center max-w-4xl w-full transition-opacity duration-1000 ease-in">
-            <!-- ID for Typewriter Effect -->
             <h1 id="typewriter-text" class="text-5xl md:text-8xl mb-8 text-amber-200 drop-shadow-lg min-h-[1.2em]"></h1>
             
             <p class="text-2xl md:text-4xl mb-12 font-medium drop-shadow-md leading-relaxed text-white fade-in-delay opacity-0 transition-opacity duration-1000">
@@ -195,7 +192,6 @@
         <div id="phase-3" class="opacity-0 hidden-layout w-full max-w-lg transition-opacity duration-1000 ease-in">
             <div class="glass-card p-6 md:p-8 rounded-3xl mx-auto border border-amber-500/20 relative">
                 
-                <!-- CLOSE BUTTON -->
                 <button onclick="toggleCard(false); event.stopPropagation();" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50 p-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -203,19 +199,12 @@
                 </button>
 
                 <img src="./proposal.jpg" alt="Our Future" class="w-full h-auto max-h-[40vh] object-cover rounded-2xl mb-6 shadow-2xl border-2 border-white/20">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-100 mb-2">Let's recreate this moment!</h2>
                 
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-100 mb-2">
-                    Let's recreate this moment!
-                </h2>
-                
-                <!-- Live Counter -->
                 <div class="mt-6 pt-6 border-t border-white/10">
                     <p class="text-sm text-amber-200/80 uppercase tracking-widest mb-2">Falling in love for</p>
-                    <div id="timer" class="text-xl md:text-2xl font-mono text-white font-bold">
-                        00d 00h 00m 00s
-                    </div>
+                    <div id="timer" class="text-xl md:text-2xl font-mono text-white font-bold">00d 00h 00m 00s</div>
                 </div>
-
                 <p class="text-xs text-amber-200/40 mt-6 tracking-[0.2em] uppercase text-center">Screenshot this ❤️</p>
             </div>
         </div>
@@ -223,18 +212,8 @@
     </main>
 
     <script>
-        // --- CONFIGURATION ---
-        const PHOTO_LIST = [
-            'image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 
-            'image5.jpg', 'image6.jpg', 'image7.jpg', 'image8.jpg',
-            'image9.jpg', 'image10.jpg', 'image11.jpg', 'image12.jpg',
-            'image13.jpg', 'image14.jpg'
-        ];
-        
-        // Date you met/started dating (YYYY-MM-DD)
+        const PHOTO_LIST = ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg', 'image6.jpg', 'image7.jpg', 'image8.jpg', 'image9.jpg', 'image10.jpg', 'image11.jpg', 'image12.jpg', 'image13.jpg', 'image14.jpg'];
         const START_DATE = new Date("2022-05-10"); 
-
-        // --- LOGIC ---
 
         function createLantern() {
             const container = document.getElementById('floating-container');
@@ -249,46 +228,34 @@
             setTimeout(() => lantern.remove(), parseFloat(duration) * 1000);
         }
 
-        // INITIALIZE ALL PHOTOS AT ONCE
         function initPhotos() {
             const container = document.getElementById('floating-container');
             if (!container) return;
-
             PHOTO_LIST.forEach((imgName) => {
                 const frame = document.createElement('div');
                 frame.classList.add('floating-photo');
-                
-                // Random Static Position
                 frame.style.left = Math.random() * 85 + 'vw';
                 frame.style.top = Math.random() * 85 + 'vh';
-                
-                // Zero Displacement Animation vars
                 const moveX = (Math.random() * 40 - 20) + 'px';
                 const moveY = (Math.random() * 40 - 20) + 'px';
                 const rot = (Math.random() * 20 - 10) + 'deg';
                 const rotEnd = (Math.random() * 20 - 10) + 'deg';
-                
                 frame.style.setProperty('--move-x', moveX);
                 frame.style.setProperty('--move-y', moveY);
                 frame.style.setProperty('--rot', rot);
                 frame.style.setProperty('--rot-end', rotEnd);
-
                 frame.style.animationDuration = (Math.random() * 3 + 3) + 's';
                 frame.style.animationDelay = (Math.random() * 2) + 's';
-
                 const img = document.createElement('img');
                 img.src = imgName;
                 img.onerror = function() { frame.style.display = 'none'; }; 
-                
                 frame.appendChild(img);
                 container.appendChild(frame);
             });
         }
 
         function createHeartBurst(e) {
-            // If clicking a button, don't create heart (stops clutter)
             if(e.target.tagName === 'BUTTON') return;
-            
             const container = document.body;
             const heart = document.createElement('div');
             heart.innerText = '❤️';
@@ -312,10 +279,8 @@
             document.getElementById('timer').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }
         setInterval(updateTimer, 1000);
-
         initPhotos();
 
-        // --- TRANSITIONS ---
         function typeWriter(text, i, fnCallback) {
             if (i < text.length) {
                 document.getElementById("typewriter-text").innerHTML = text.substring(0, i+1) + '<span class="cursor"></span>';
@@ -329,15 +294,12 @@
             if(e) e.stopPropagation(); 
             const music = document.getElementById('bg-music');
             if(music) { music.volume = 0.5; music.play().catch(console.log); }
-
             const p1 = document.getElementById('phase-1');
             p1.classList.add('opacity-0');
-            
             setTimeout(() => {
                 p1.classList.add('hidden-layout');
                 const p2 = document.getElementById('phase-2');
                 p2.classList.remove('hidden-layout');
-                
                 setTimeout(() => {
                     p2.classList.remove('opacity-0');
                     p2.classList.add('opacity-100');
@@ -349,7 +311,6 @@
                     });
                 }, 100);
             }, 1000);
-
             let intense = setInterval(createLantern, 200);
             setTimeout(() => clearInterval(intense), 5000);
             document.getElementById('bg-image').style.filter = "brightness(1.0)";
@@ -360,7 +321,6 @@
             const p2 = document.getElementById('phase-2');
             p2.classList.remove('opacity-100');
             p2.classList.add('opacity-0');
-
             setTimeout(() => {
                 p2.classList.add('hidden-layout');
                 const p3 = document.getElementById('phase-3');
@@ -370,28 +330,23 @@
                     p3.classList.add('opacity-100');
                 }, 50);
             }, 1000);
-
             setInterval(createLantern, 100);
         }
 
         function toggleCard(show) {
             const card = document.getElementById('phase-3');
             const btn = document.getElementById('reopen-btn');
-
             if (show) {
                 btn.classList.add('opacity-0');
                 setTimeout(() => btn.classList.add('hidden-layout'), 500);
-
                 card.classList.remove('hidden-layout');
                 setTimeout(() => {
                     card.classList.remove('opacity-0');
                     card.classList.add('opacity-100');
                 }, 50);
-
             } else {
                 card.classList.remove('opacity-100');
                 card.classList.add('opacity-0');
-                
                 setTimeout(() => {
                     card.classList.add('hidden-layout');
                     btn.classList.remove('hidden-layout');
@@ -400,25 +355,20 @@
             }
         }
         
-        // MODAL LOGIC
         function showNoModal(e) {
             if(e) e.stopPropagation();
             const modal = document.getElementById('no-modal');
             modal.classList.remove('hidden-layout');
-            // Slight delay to allow display:block to apply before opacity transition
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
-                modal.querySelector('.glass-card').classList.remove('scale-95');
-                modal.querySelector('.glass-card').classList.add('scale-100');
+                modal.querySelector('.safe-modal-card').classList.add('scale-100');
             }, 10);
         }
 
         function closeNoModal() {
             const modal = document.getElementById('no-modal');
             modal.classList.add('opacity-0');
-            modal.querySelector('.glass-card').classList.remove('scale-100');
-            modal.querySelector('.glass-card').classList.add('scale-95');
-            
+            modal.querySelector('.safe-modal-card').classList.remove('scale-100');
             setTimeout(() => {
                 modal.classList.add('hidden-layout');
             }, 300);
